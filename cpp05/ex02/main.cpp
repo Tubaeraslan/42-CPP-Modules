@@ -1,112 +1,29 @@
 #include "Bureaucrat.hpp"
-#include "Form.hpp"
-#include <iostream>
+#include "ShrubberyCreationForm.hpp"
+#include "RobotomyRequestForm.hpp"
+#include "PresidentialPardonForm.hpp"
 
-int main()
-{
-    std::cout << "========== BASIC FORM CREATION ==========" << std::endl;
-    try
-    {
-        Form taxForm("Tax Form", 50, 25);
-        std::cout << taxForm << std::endl;
-    }
-    catch (std::exception& e)
-    {
-        std::cout << "Exception: " << e.what() << std::endl;
-    }
 
-    std::cout << "\n========== FORM GRADE TOO HIGH ==========" << std::endl;
-    try
-    {
-        Form invalidHigh("Invalid High", 0, 10);
-        std::cout << invalidHigh << std::endl;
-    }
-    catch (std::exception& e)
-    {
-        std::cout << "Exception: " << e.what() << std::endl;
-    }
+int main() {
+    Bureaucrat boss("Boss", 1);
+    Bureaucrat intern("Intern", 150);
 
-    std::cout << "\n========== FORM GRADE TOO LOW ==========" << std::endl;
-    try
-    {
-        Form invalidLow("Invalid Low", 151, 10);
-        std::cout << invalidLow << std::endl;
-    }
-    catch (std::exception& e)
-    {
-        std::cout << "Exception: " << e.what() << std::endl;
-    }
+    ShrubberyCreationForm f1("home");
+    RobotomyRequestForm f2("Bender");
+    PresidentialPardonForm f3("Arthur Dent");
 
-    std::cout << "\n========== SIGN FORM SUCCESS ==========" << std::endl;
-    try
-    {
-        Bureaucrat boss("Boss", 1);
-        Form contract("Contract", 10, 5);
+    // Execute without signing (should fail)
+    intern.executeForm(f1);
 
-        std::cout << boss << std::endl;
-        std::cout << contract << std::endl;
+    intern.signForm(f1);
+    boss.signForm(f1);
+    boss.executeForm(f1);
+    // Low grade execute (should fail)
+    intern.executeForm(f1);
 
-        boss.signForm(contract);   // should succeed
+    boss.signForm(f2);
+    boss.executeForm(f2);
 
-        std::cout << contract << std::endl;
-    }
-    catch (std::exception& e)
-    {
-        std::cout << "Exception: " << e.what() << std::endl;
-    }
-
-    std::cout << "\n========== SIGN FORM FAILURE ==========" << std::endl;
-    try
-    {
-        Bureaucrat intern("Intern", 150);
-        Form secret("Secret File", 50, 20);
-
-        std::cout << intern << std::endl;
-        std::cout << secret << std::endl;
-
-        intern.signForm(secret);   // should fail
-    }
-    catch (std::exception& e)
-    {
-        std::cout << "Exception caught in main: " << e.what() << std::endl;
-    }
-
-    std::cout << "\n========== MULTIPLE BUREAUCRATS ==========" << std::endl;
-    try
-    {
-        Bureaucrat junior("Junior", 100);
-        Bureaucrat senior("Senior", 30);
-
-        Form report("Monthly Report", 50, 10);
-
-        std::cout << report << std::endl;
-
-        junior.signForm(report);   // fail
-        senior.signForm(report);   // success
-
-        std::cout << report << std::endl;
-    }
-    catch (std::exception& e)
-    {
-        std::cout << "Exception: " << e.what() << std::endl;
-    }
-
-    std::cout << "\n========== ALREADY SIGNED FORM ==========" << std::endl;
-    try
-    {
-        Bureaucrat chief("Chief", 5);
-        Form order("Executive Order", 10, 5);
-
-        chief.signForm(order);
-        chief.signForm(order); // should do nothing or print already signed behavior
-
-        std::cout << order << std::endl;
-    }
-    catch (std::exception& e)
-    {
-        std::cout << "Exception: " << e.what() << std::endl;
-    }
-
-    std::cout << "\n========== END OF TESTS ==========" << std::endl;
-    return 0;
+    boss.signForm(f3);
+    boss.executeForm(f3);
 }

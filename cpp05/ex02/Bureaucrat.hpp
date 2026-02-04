@@ -4,7 +4,7 @@
 #include <iostream>
 #include <string>
 #include <exception>
-#include "Form.hpp"
+#include "AForm.hpp"
 
 class Bureaucrat
 {
@@ -26,6 +26,7 @@ class Bureaucrat
         int getGrade() const;
         void incrementGrade(); // sayı küçüldükçe rütbe artar
         void decrementGrade(); // sayı büyüdükçe rütbe azalır
+        void executeForm(const AForm& form) const;
 
         // Exception classes
         class GradeTooHighException : public std::exception{
@@ -37,7 +38,7 @@ class Bureaucrat
                 const char* what() const throw();
         };
 
-        void signForm(Form& form) const;
+        void signForm(AForm& form) const;
 };
 
 std::ostream& operator<<(std::ostream& os, const Bureaucrat& b);

@@ -8,6 +8,8 @@
 class Bureaucrat;  // Forward declaration
 
 class AForm{
+    protected:
+        void checkExecute(Bureaucrat const & executor) const;
     private:
         const std::string name;
         bool isSigned;
@@ -17,7 +19,7 @@ class AForm{
         AForm();
         AForm(const AForm& other);
         AForm& operator=(const AForm& other);
-        ~AForm();
+        virtual ~AForm();
 
         AForm(const std::string& name, int gradeToSign, int gradeToExecute);
         std::string getName() const;
@@ -25,6 +27,7 @@ class AForm{
         int getGradeToSign() const;
         int getGradeToExecute() const;
         void beSigned(const Bureaucrat& b);
+        virtual void execute(const Bureaucrat& executor) const = 0;
 
         // Exception classes
         class GradeTooHighException : public std::exception{
@@ -34,6 +37,9 @@ class AForm{
         class GradeTooLowException : public std::exception{
             public:
                 const char* what() const throw();
+        };
+        class NotSignedException : public std::exception {
+        public: const char* what() const throw();
         };
 
 };
