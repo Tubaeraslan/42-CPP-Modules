@@ -39,7 +39,8 @@ class AForm{
                 const char* what() const throw();
         };
         class NotSignedException : public std::exception {
-        public: const char* what() const throw();
+        	public:
+				const char* what() const throw();
         };
 
 };

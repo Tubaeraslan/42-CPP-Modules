@@ -13,8 +13,7 @@ void ShrubberyCreationForm::execute(const Bureaucrat& executor) const {
 
     std::ofstream outFile(target + "_shrubbery");
     if (!outFile) {
-        std::cerr << "Error: Could not create file " << target + "_shrubbery" << std::endl;
-        return;
+        throw std::runtime_error("Error: Could not create file " + target + "_shrubbery");
     }
 
     outFile <<

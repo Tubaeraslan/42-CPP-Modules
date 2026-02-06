@@ -8,10 +8,10 @@ Form::Form() : name("Default"), isSigned(false), gradeToSign(150), gradeToExecut
 Form::Form(const std::string& name, int gradeToSign, int gradeToExecute)
     : name(name), isSigned(false), gradeToSign(gradeToSign), gradeToExecute(gradeToExecute) {
     if (gradeToSign < 1 || gradeToExecute < 1) {
-        throw GradeTooHighException();
+        throw Form::GradeTooHighException();
     }
     if (gradeToSign > 150 || gradeToExecute > 150) {
-        throw GradeTooLowException();
+        throw Form::GradeTooLowException();
     }
 }
 
@@ -51,7 +51,7 @@ int Form::getGradeToExecute() const {
 
 void Form::beSigned(const Bureaucrat& b) {
     if (b.getGrade() > gradeToSign) {
-        throw GradeTooLowException();
+        throw Form::GradeTooLowException();
     }
     isSigned = true;
 }

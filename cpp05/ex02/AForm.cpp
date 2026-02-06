@@ -8,10 +8,10 @@ AForm::AForm() : name("Default"), isSigned(false), gradeToSign(150), gradeToExec
 AForm::AForm(const std::string& name, int gradeToSign, int gradeToExecute)
     : name(name), isSigned(false), gradeToSign(gradeToSign), gradeToExecute(gradeToExecute) {
     if (gradeToSign < 1 || gradeToExecute < 1) {
-        throw GradeTooHighException();
+        throw AForm::GradeTooHighException();
     }
     if (gradeToSign > 150 || gradeToExecute > 150) {
-        throw GradeTooLowException();
+        throw AForm::GradeTooLowException();
     }
 }
 
@@ -51,7 +51,7 @@ int AForm::getGradeToExecute() const {
 
 void AForm::beSigned(const Bureaucrat& b) {
     if (b.getGrade() > gradeToSign) {
-        throw GradeTooLowException();
+        throw AForm::GradeTooLowException();
     }
     isSigned = true;
 }
@@ -70,10 +70,10 @@ const char* AForm::NotSignedException::what() const throw() {
 
 void AForm::checkExecute(Bureaucrat const & executor) const {
     if (!isSigned) {
-        throw NotSignedException();
+        throw AForm::NotSignedException();
     }
     if (executor.getGrade() > gradeToExecute) {
-        throw GradeTooLowException();
+        throw AForm::GradeTooLowException();
     }
 }
 
