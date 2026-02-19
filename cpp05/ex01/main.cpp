@@ -98,7 +98,8 @@ int main()
         Form order("Executive Order", 10, 5);
 
         chief.signForm(order);
-        chief.signForm(order); // should do nothing or print already signed behavior
+        std::cout << "Attempting to sign an already signed form..." << std::endl;
+        chief.signForm(order); // should throw AlreadySignedException
 
         std::cout << order << std::endl;
     }

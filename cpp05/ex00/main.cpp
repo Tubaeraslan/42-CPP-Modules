@@ -67,41 +67,6 @@ int main()
         std::cout << "Exception caught: " << e.what() << std::endl;
     }
 
-    std::cout << "\n========== COPY CONSTRUCTOR TEST ==========" << std::endl;
-    try
-    {
-        Bureaucrat original("Original", 10);
-        Bureaucrat copy(original);
-
-        std::cout << "Original: " << original << std::endl;
-        std::cout << "Copy:     " << copy << std::endl;
-    }
-    catch (std::exception& e)
-    {
-        std::cout << "Exception caught: " << e.what() << std::endl;
-    }
-
-    std::cout << "\n========== COPY ASSIGNMENT OPERATOR TEST ==========" << std::endl;
-    try
-    {
-        Bureaucrat x("Xavier", 5);
-        Bureaucrat y("Yvonne", 100);
-
-        std::cout << "Before assignment:" << std::endl;
-        std::cout << "X: " << x << std::endl;
-        std::cout << "Y: " << y << std::endl;
-
-        y = x;
-
-        std::cout << "After assignment:" << std::endl;
-        std::cout << "X: " << x << std::endl;
-        std::cout << "Y: " << y << std::endl;
-        std::cout << "(Notice: Y keeps its own name)" << std::endl;
-    }
-    catch (std::exception& e)
-    {
-        std::cout << "Exception caught: " << e.what() << std::endl;
-    }
 
     std::cout << "\n========== END OF TESTS ==========" << std::endl;
     return 0;
