@@ -90,7 +90,7 @@ void ScalarConverter::convert(const std::string& literal)
         literal[literal.length() - 1] == 'f')
     {
         std::string temp = literal.substr(0, literal.length() - 1);
-        value = std::strtod(temp.c_str(), &endptr);
+        value = std::strtod(temp.c_str(), &endptr);//endptr->sayı parse edildikten sonra kalan kısım \0 olması lazım. "42.5f"-> 42.5 parse edilir, endptr->"f" olur. "42.5fabc"-> 42.5 parse edilir, endptr->"fabc" olur.
 
         if (*endptr != '\0')
         {
@@ -101,6 +101,7 @@ void ScalarConverter::convert(const std::string& literal)
             return;
         }
     }
+    //int ve double
     else
     {
         value = std::strtod(literal.c_str(), &endptr);
