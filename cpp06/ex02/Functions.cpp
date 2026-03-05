@@ -18,7 +18,7 @@ Base *generate(void)
 
 void identify(Base *p)
 {
-    if (dynamic_cast<A *>(p)) //başarılı olursa pointer döner, başarısız olursa nullptr döner
+    if (dynamic_cast<A *>(p))
         std::cout << "A" << std::endl;
     else if (dynamic_cast<B *>(p))
         std::cout << "B" << std::endl;

@@ -19,21 +19,8 @@ ScalarConverter::~ScalarConverter()
 {
 }
 
-/*
-'a'        → char
-42         → int
-42.0       → double
-42.0f      → float
-nan        → double special
-nanf       → float special
-+inf       → double special
-+inff      → float special
-*/
-
-//string olarak gelen literal'ı char, int, float ve double türlerine dönüştürmeye çalışır. Dönüştürme işlemi sırasında, özel durumları (nan, +inf, -inf) ve geçersiz girişleri ele alır. Sonuçları uygun formatta ekrana yazdırır.
 void ScalarConverter::convert(const std::string& literal)
 {
-    //'a'
     if (literal.length() == 3 &&
     literal[0] == '\'' &&
     literal[2] == '\'')
@@ -48,7 +35,6 @@ void ScalarConverter::convert(const std::string& literal)
         std::cout << "double: " << static_cast<double>(c) << "\n";
         return;
     }
-    //a
     if (literal.length() == 1 && !std::isdigit(literal[0]))
     {
         char c = literal[0];
@@ -61,7 +47,6 @@ void ScalarConverter::convert(const std::string& literal)
         std::cout << "double: " << static_cast<double>(c) << "\n";
         return;
     }
-    //special double
     if (literal=="nan" || literal=="+inf" || literal=="-inf")
     {
         std::cout << "char: impossible" << std::endl;
@@ -70,7 +55,6 @@ void ScalarConverter::convert(const std::string& literal)
         std::cout << "double: " << literal << std::endl;
         return;
     }
-    //special float
     if (literal=="nanf" || literal=="+inff" || literal=="-inff")
     {
         std::cout << "char: impossible" << std::endl;
@@ -80,17 +64,14 @@ void ScalarConverter::convert(const std::string& literal)
         return;
     }
 
-    //strtod->string'i double'a dönüştürür "42.5"-> 42.5.
-    //çünkü double en geniş tür. sonra double dn diğerlerine cast yapıcaz
     char* endptr;
     double value;
 
-    //float
     if (literal.length() > 1 &&
         literal[literal.length() - 1] == 'f')
     {
         std::string temp = literal.substr(0, literal.length() - 1);
-        value = std::strtod(temp.c_str(), &endptr);//endptr->sayı parse edildikten sonra kalan kısım \0 olması lazım. "42.5f"-> 42.5 parse edilir, endptr->"f" olur. "42.5fabc"-> 42.5 parse edilir, endptr->"fabc" olur.
+        value = std::strtod(temp.c_str(), &endptr);
 
         if (*endptr != '\0')
         {
@@ -101,7 +82,7 @@ void ScalarConverter::convert(const std::string& literal)
             return;
         }
     }
-    //int ve double
+
     else
     {
         value = std::strtod(literal.c_str(), &endptr);
@@ -115,7 +96,6 @@ void ScalarConverter::convert(const std::string& literal)
         }
     }
     
-    //char
     if (std::isnan(value) || value < 0 || value > 127)
     {
         std::cout << "char: impossible\n";
@@ -129,8 +109,6 @@ void ScalarConverter::convert(const std::string& literal)
         std::cout << "char: '" << static_cast<char>(value) << "'\n";
     }
 
-    //int
-    //overflow underflow kontrolü
     if (std::isnan(value) ||
     value > std::numeric_limits<int>::max() ||
     value < std::numeric_limits<int>::min())
@@ -142,7 +120,6 @@ void ScalarConverter::convert(const std::string& literal)
         std::cout << "int: " << static_cast<int>(value) << "\n";
     }
 
-    //float
     std::cout << std::fixed << std::setprecision(1);
 
     if (std::isnan(value) || std::isinf(value) ||
@@ -157,6 +134,5 @@ void ScalarConverter::convert(const std::string& literal)
                   << static_cast<float>(value) << "f\n";
     }
 
-    //double
     std::cout << "double: " << value << "\n";
 }
