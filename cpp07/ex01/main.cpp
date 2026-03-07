@@ -47,6 +47,11 @@ void addHello(std::string &s)
     s = "Hello_" + s;
 }
 
+void printConstInt(const int &x)
+{
+        std::cout << x << " ";
+}
+
 // ---------------- MAIN TEST ----------------
 
 int main()
@@ -95,6 +100,14 @@ int main()
     iter(strArray, 3, addHello);
     iter(strArray, 3, printString);
 
+    std::cout << "\n";
+
+    std::cout << "\n===== CONST INT TEST =====\n";
+
+    const int constIntArray[5] = {10, 20, 30, 40, 50};
+
+    std::cout << "Const array: ";
+    iter(constIntArray, 5, printConstInt);
     std::cout << "\n";
 
     return 0;
