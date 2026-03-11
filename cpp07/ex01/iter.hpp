@@ -5,7 +5,7 @@
 
 
 template <typename T>
-void iter(T *array, size_t length, void (*func)(T &))
+void iter(T *array, const size_t length, void (*func)(T &))
 {
     for (size_t i = 0; i < length; i++)
     {
@@ -14,7 +14,7 @@ void iter(T *array, size_t length, void (*func)(T &))
 }
 
 template <typename T>
-void iter(const T* array, size_t len, void (*func)(const T &))
+void iter(const T* array, const size_t len, void (*func)(const T &))
 {
     for (size_t i = 0; i < len; i++)
     {
