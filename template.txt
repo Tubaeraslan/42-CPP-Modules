@@ -1,0 +1,41 @@
+TEMPLATE
+
+generic kod yazmak için kullanılır.
+aynı fonksiyonu farklı veri tipleri için tekrar yazmaya gerek kalmaz.
+
+template <typename T>:
+bu şu anlama gelir bu fonksiyon herhangi bir veri tipi ile çalışır
+T=type
+
+fonksiyon çağırışdığında c++ otomatik olarak type belirler.yani compiler arkada yeni fonksiyon oluşturur(türe göre)
+
+generic programming mantığı:
+tek kod -> birçok type
+
+Function template
+fonksiyon template ile yazılmış
+template <typename T>
+void print(T value)
+{
+    std::cout << value << std::endl;
+}
+
+Class template
+template <typename T>
+class Box
+{
+public:
+    T value;
+
+    Box(T v)
+    {
+        value = v;
+    }
+};
+
+template fonksiyonlar .cpp içine yazılmaz .hpp içine yazılır. çünkü
+compiler template i compile time da üretir.
+
+Neden reference(&) kullanıyoruz
+değişkenlerin kendisinin değiştirilmesi için.
+eğer reference olmazsa kopya değişkenler değişir.
