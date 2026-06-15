@@ -11,7 +11,7 @@
 class BitcoinExchange
 {
 private:
-    std::map<std::string, float> _database;
+    std::map<std::string, double> _database;
 
 public:
     BitcoinExchange();
@@ -25,7 +25,7 @@ public:
     bool isValidDate(const std::string& date);
     bool isValidValue(const std::string& value);
 
-    float getExchangeRate(const std::string& date);
+    double getExchangeRate(const std::string& date);
 };
 
 #endif

@@ -43,7 +43,18 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
 
     std::string line;
 
-    std::getline(file, line);
+    if (!std::getline(file, line))
+    {
+        std::cerr << "Error: empty file." << std::endl;
+        return;
+    }
+
+    if (line != "date,exchange_rate")
+    {
+        std::cerr << "Error: invalid database header."
+                << std::endl;
+        return;
+    }
 
     while (std::getline(file, line))
     {
@@ -55,10 +66,16 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
         if (std::getline(ss, date, ',')
             && std::getline(ss, rateStr))
         {
-            float rate = std::atof(rateStr.c_str());
+            double rate = std::atof(rateStr.c_str());
 
             _database[trim(date)] = rate;
         }
+    }
+
+    if (_database.empty())
+    {
+        std::cerr << "Error: database empty."
+                << std::endl;
     }
 
     file.close();
@@ -85,23 +102,37 @@ bool BitcoinExchange::isValidDate(const std::string& date)
     int month = std::atoi(date.substr(5, 2).c_str());
     int day = std::atoi(date.substr(8, 2).c_str());
 
-    if (year < 0)
-        return false;
-
     if (month < 1 || month > 12)
         return false;
 
-    if (day < 1 || day > 31)
+    int daysInMonth[] =
+    {
+        31, 28, 31, 30,
+        31, 30, 31, 31,
+        30, 31, 30, 31
+    };
+
+    bool leap =
+    (
+        (year % 4 == 0 && year % 100 != 0)
+        || (year % 400 == 0)
+    );
+
+    if (leap)
+        daysInMonth[1] = 29;
+
+    if (day < 1 || day > daysInMonth[month - 1])
         return false;
 
     return true;
 }
 
+
 bool BitcoinExchange::isValidValue(const std::string& value)
 {
     std::stringstream ss(value);
 
-    float number;
+    double number;
 
     ss >> number;
 
@@ -123,9 +154,9 @@ bool BitcoinExchange::isValidValue(const std::string& value)
     return true;
 }
 
-float BitcoinExchange::getExchangeRate(const std::string& date)
+double BitcoinExchange::getExchangeRate(const std::string& date)
 {
-    std::map<std::string, float>::iterator it;
+    std::map<std::string, double>::iterator it;
 
     it = _database.lower_bound(date);
 
@@ -153,7 +184,17 @@ void BitcoinExchange::processInput(const std::string& filename)
 
     std::string line;
 
-    std::getline(file, line);
+    if (!std::getline(file, line))
+    {
+        std::cerr << "Error: empty file." << std::endl;
+        return;
+    }
+
+    if (line != "date | value")
+    {
+        std::cerr << "Error: bad header." << std::endl;
+        return;
+    }
 
     while (std::getline(file, line))
     {
@@ -183,9 +224,9 @@ void BitcoinExchange::processInput(const std::string& filename)
         if (!isValidValue(valueStr))
             continue;
 
-        float value = std::atof(valueStr.c_str());
+        double value = std::atof(valueStr.c_str());
 
-        float rate = getExchangeRate(date);
+        double rate = getExchangeRate(date);
 
         if (rate < 0)
         {
