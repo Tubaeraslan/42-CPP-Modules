@@ -8,36 +8,38 @@
 #include <cstdlib>
 #include <climits>
 #include <ctime>
+#include <cctype>
 
 class PmergeMe
 {
-    private:
-        std::vector<int> _vector;
-        std::deque<int>  _deque;
+private:
+    std::vector<int> _vector;
+    std::deque<int>  _deque;
 
-        void parseInput(char **argv);
+    void parseInput(char **argv);
+    bool isValidNumber(const std::string& str);
 
-        void fordJohnsonVector(std::vector<int>& vec);
-        void fordJohnsonDeque(std::deque<int>& deq);
+    void fordJohnsonVector(std::vector<int>& vec);
+    void fordJohnsonDeque(std::deque<int>& deq);
 
-        void binaryInsertVector(std::vector<int>& vec, int value);
-        void binaryInsertDeque(std::deque<int>& deq, int value);
+    void binaryInsertVector(std::vector<int>& vec, int value);
+    void binaryInsertDeque(std::deque<int>& deq, int value);
 
-        bool isValidNumber(const std::string& str);
+    std::vector<size_t> generateJacobsthalOrder(size_t size);
 
-    public:
-        PmergeMe();
-        PmergeMe(const PmergeMe& other);
-        PmergeMe& operator=(const PmergeMe& other);
-        ~PmergeMe();
+public:
+    PmergeMe();
+    PmergeMe(const PmergeMe& other);
+    PmergeMe& operator=(const PmergeMe& other);
+    ~PmergeMe();
 
-        void process(char **argv);
+    void process(char **argv);
 
-        void printBefore() const;
-        void printAfter() const;
+    void printBefore() const;
+    void printAfter() const;
 
-        double sortVector();
-        double sortDeque();
+    double sortVector();
+    double sortDeque();
 };
 
 #endif
