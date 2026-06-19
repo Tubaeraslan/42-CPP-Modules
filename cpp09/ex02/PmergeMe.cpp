@@ -1,10 +1,6 @@
 #include "PmergeMe.hpp"
 
-
-PmergeMe::PmergeMe()
-{
-
-}
+PmergeMe::PmergeMe() {}
 
 PmergeMe::PmergeMe(const PmergeMe& other)
 {
@@ -21,25 +17,52 @@ PmergeMe& PmergeMe::operator=(const PmergeMe& other)
     return *this;
 }
 
-PmergeMe::~PmergeMe()
-{
-}
+PmergeMe::~PmergeMe() {}
 
 void PmergeMe::process(char **argv)
 {
     parseInput(argv);
+
     printBefore();
 
-    double vectorTime = sortVector();
-    double dequeTime = sortDeque();
+    double t1 = sortVector();
+    double t2 = sortDeque();
 
     printAfter();
 
     std::cout << "Time to process a range of " << _vector.size()
-              << " elements with std::vector : " << vectorTime << " us\n";
+              << " elements with std::vector : " << t1 << " us\n";
 
     std::cout << "Time to process a range of " << _deque.size()
-              << " elements with std::deque : " << dequeTime << " us\n";
+              << " elements with std::deque : " << t2 << " us\n";
+}
+
+bool PmergeMe::isValidNumber(const std::string& s)
+{
+    if (s.empty())
+        return false;
+
+    for (size_t i = 0; i < s.size(); i++)
+        if (!std::isdigit(s[i]))
+            return false;
+
+    long n = std::atol(s.c_str());
+    return (n >= 0 && n <= INT_MAX);
+}
+
+void PmergeMe::parseInput(char **argv)
+{
+    for (int i = 1; argv[i]; i++)
+    {
+        std::string s(argv[i]);
+
+        if (!isValidNumber(s))
+            throw std::runtime_error("Error");
+
+        int n = std::atoi(s.c_str());
+        _vector.push_back(n);
+        _deque.push_back(n);
+    }
 }
 
 void PmergeMe::printBefore() const
@@ -51,7 +74,7 @@ void PmergeMe::printBefore() const
         if (i + 1 != _vector.size())
             std::cout << " ";
     }
-    std::cout << std::endl;
+    std::cout << "\n";
 }
 
 void PmergeMe::printAfter() const
@@ -63,202 +86,159 @@ void PmergeMe::printAfter() const
         if (i + 1 != _vector.size())
             std::cout << " ";
     }
-    std::cout << std::endl;
+    std::cout << "\n";
 }
 
 double PmergeMe::sortVector()
 {
-    clock_t start = clock();
+    auto start = std::chrono::high_resolution_clock::now();
+
     fordJohnsonVector(_vector);
-    clock_t end = clock();
-    return (double)(end - start) / CLOCKS_PER_SEC * 1000000;
+
+    auto end = std::chrono::high_resolution_clock::now();
+    return std::chrono::duration<double, std::micro>(end - start).count();
 }
 
 double PmergeMe::sortDeque()
 {
-    clock_t start = clock();
+    auto start = std::chrono::high_resolution_clock::now();
+
     fordJohnsonDeque(_deque);
-    clock_t end = clock();
-    return (double)(end - start) / CLOCKS_PER_SEC * 1000000;
+
+    auto end = std::chrono::high_resolution_clock::now();
+    return std::chrono::duration<double, std::micro>(end - start).count();
 }
 
-void PmergeMe::parseInput(char **argv)
+void PmergeMe::binaryInsertVector(std::vector<int>& v, int val)
 {
-    for (int i = 1; argv[i]; i++)
-    {
-        std::string s(argv[i]);
-
-        if (!isValidNumber(s))
-        {
-            std::cerr << "Error\n";
-            exit(1);
-        }
-
-        long n = std::atol(s.c_str());
-        _vector.push_back(n);
-        _deque.push_back(n);
-    }
-}
-
-bool PmergeMe::isValidNumber(const std::string& str)
-{
-    if (str.empty())
-        return false;
-
-    for (size_t i = 0; i < str.size(); i++)
-        if (!std::isdigit(str[i]))
-            return false;
-
-    long n = std::atol(str.c_str());
-    if (n < 0 || n > INT_MAX)
-        return false;
-
-    return true;
-}
-
-void PmergeMe::binaryInsertVector(std::vector<int>& vec, int value)
-{
-    size_t l = 0, r = vec.size();
+    size_t l = 0, r = v.size();
 
     while (l < r)
     {
-        size_t mid = (l + r) / 2;
-        if (value < vec[mid])
-            r = mid;
+        size_t m = (l + r) / 2;
+        if (v[m] < val)
+            l = m + 1;
         else
-            l = mid + 1;
+            r = m;
     }
-    vec.insert(vec.begin() + l, value);
+    v.insert(v.begin() + l, val);
 }
 
-void PmergeMe::binaryInsertDeque(std::deque<int>& deq, int value)
+void PmergeMe::binaryInsertDeque(std::deque<int>& d, int val)
 {
-    size_t l = 0, r = deq.size();
+    size_t l = 0, r = d.size();
 
     while (l < r)
     {
-        size_t mid = (l + r) / 2;
-        if (value < deq[mid])
-            r = mid;
+        size_t m = (l + r) / 2;
+        if (d[m] < val)
+            l = m + 1;
         else
-            l = mid + 1;
+            r = m;
     }
-    deq.insert(deq.begin() + l, value);
+    d.insert(d.begin() + l, val);
 }
 
-std::vector<size_t> PmergeMe::generateJacobsthalOrder(size_t size)
+std::vector<size_t> PmergeMe::jacobsthalIndices(size_t n)
 {
     std::vector<size_t> order;
-    std::vector<bool> used(size, false);
+    if (n == 0)
+        return order;
 
-    size_t j0 = 0;
-    size_t j1 = 1;
+    std::vector<size_t> jac;
+    jac.push_back(0);
+    jac.push_back(1);
 
-    while (j1 < size)
+    while (true)
     {
-        order.push_back(j1);
-        size_t next = j1 + 2 * j0;
-        j0 = j1;
-        j1 = next;
+        size_t next = jac[jac.size() - 1] + 2 * jac[jac.size() - 2];
+        if (next >= n)
+            break;
+        jac.push_back(next);
     }
 
-    for (size_t i = 0; i < size; i++)
-        if (std::find(order.begin(), order.end(), i) == order.end())
+    std::vector<bool> used(n, false);
+
+    for (size_t i = 1; i < jac.size(); i++)
+    {
+        size_t idx = jac[i];
+        if (idx < n && !used[idx])
+        {
+            order.push_back(idx);
+            used[idx] = true;
+        }
+    }
+
+    for (size_t i = 0; i < n; i++)
+        if (!used[i])
             order.push_back(i);
 
     return order;
 }
 
-void PmergeMe::fordJohnsonVector(std::vector<int>& vec)
+void PmergeMe::fordJohnsonVector(std::vector<int>& v)
 {
-    if (vec.size() <= 1)
+    if (v.size() <= 1)
         return;
 
-    std::vector<int> bigs;
-    std::vector<int> smalls;
+    std::vector<int> big, small;
 
-    for (size_t i = 0; i + 1 < vec.size(); i += 2)
+    for (size_t i = 0; i + 1 < v.size(); i += 2)
     {
-        if (vec[i] < vec[i + 1])
+        if (v[i] < v[i + 1])
         {
-            smalls.push_back(vec[i]);
-            bigs.push_back(vec[i + 1]);
+            small.push_back(v[i]);
+            big.push_back(v[i + 1]);
         }
         else
         {
-            smalls.push_back(vec[i + 1]);
-            bigs.push_back(vec[i]);
+            small.push_back(v[i + 1]);
+            big.push_back(v[i]);
         }
     }
 
-    if (vec.size() % 2 == 1)
-        bigs.push_back(vec.back());
+    if (v.size() % 2 == 1)
+        big.push_back(v.back());
 
-    fordJohnsonVector(bigs);
-    vec = bigs;
+    fordJohnsonVector(big);
+    v = big;
 
-    std::vector<size_t> order = generateJacobsthalOrder(smalls.size());
-
-    std::vector<bool> inserted(smalls.size(), false);
+    std::vector<size_t> order = jacobsthalIndices(small.size());
 
     for (size_t i = 0; i < order.size(); i++)
-    {
-        size_t idx = order[i];
-        if (idx < smalls.size() && !inserted[idx])
-        {
-            binaryInsertVector(vec, smalls[idx]);
-            inserted[idx] = true;
-        }
-    }
-
-    for (size_t i = 0; i < smalls.size(); i++)
-        if (!inserted[i])
-            binaryInsertVector(vec, smalls[i]);
+        binaryInsertVector(v, small[order[i]]);
 }
 
-void PmergeMe::fordJohnsonDeque(std::deque<int>& deq)
+void PmergeMe::fordJohnsonDeque(std::deque<int>& d)
 {
-    if (deq.size() <= 1)
+    if (d.size() <= 1)
         return;
 
-    std::vector<int> bigs;
-    std::vector<int> smalls;
+    std::vector<int> big, small;
 
-    for (size_t i = 0; i + 1 < deq.size(); i += 2)
+    for (size_t i = 0; i + 1 < d.size(); i += 2)
     {
-        if (deq[i] < deq[i + 1])
+        if (d[i] < d[i + 1])
         {
-            smalls.push_back(deq[i]);
-            bigs.push_back(deq[i + 1]);
+            small.push_back(d[i]);
+            big.push_back(d[i + 1]);
         }
         else
         {
-            smalls.push_back(deq[i + 1]);
-            bigs.push_back(deq[i]);
+            small.push_back(d[i + 1]);
+            big.push_back(d[i]);
         }
     }
 
-    if (deq.size() % 2 == 1)
-        bigs.push_back(deq.back());
+    if (d.size() % 2 == 1)
+        big.push_back(d.back());
 
-    std::deque<int> tmp(bigs.begin(), bigs.end());
+    std::deque<int> tmp(big.begin(), big.end());
     fordJohnsonDeque(tmp);
-    deq = tmp;
+    d = tmp;
 
-    std::vector<size_t> order = generateJacobsthalOrder(smalls.size());
-    std::vector<bool> inserted(smalls.size(), false);
+    std::vector<size_t> order = jacobsthalIndices(small.size());
 
     for (size_t i = 0; i < order.size(); i++)
-    {
-        size_t idx = order[i];
-        if (idx < smalls.size() && !inserted[idx])
-        {
-            binaryInsertDeque(deq, smalls[idx]);
-            inserted[idx] = true;
-        }
-    }
-
-    for (size_t i = 0; i < smalls.size(); i++)
-        if (!inserted[i])
-            binaryInsertDeque(deq, smalls[i]);
+        binaryInsertDeque(d, small[order[i]]);
 }

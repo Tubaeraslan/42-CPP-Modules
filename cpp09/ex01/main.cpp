@@ -11,13 +11,11 @@ int main(int argc, char **argv)
     try
     {
         RPN rpn;
-
-        std::cout << rpn.evaluate(argv[1])
-                  << std::endl;
+        std::cout << rpn.evaluate(argv[1]) << std::endl;
     }
     catch (std::exception& e)
     {
-        std::cerr << e.what() << std::endl;
+        std::cerr << "Error" << std::endl;
     }
 
     return 0;

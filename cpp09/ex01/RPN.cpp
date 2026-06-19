@@ -1,8 +1,6 @@
 #include "RPN.hpp"
 
-RPN::RPN()
-{
-}
+RPN::RPN() {}
 
 RPN::RPN(const RPN& other)
 {
@@ -16,13 +14,18 @@ RPN& RPN::operator=(const RPN& other)
     return *this;
 }
 
-RPN::~RPN()
-{
-}
+RPN::~RPN() {}
 
 bool RPN::isOperator(const std::string& token)
 {
     return (token == "+" || token == "-" || token == "*" || token == "/");
+}
+
+bool RPN::isNumber(const std::string& token)
+{
+    if (token.size() != 1)
+        return false;
+    return std::isdigit(token[0]);
 }
 
 int RPN::calculate(int a, int b, const std::string& op)
@@ -44,33 +47,27 @@ int RPN::calculate(int a, int b, const std::string& op)
 
 int RPN::evaluate(const std::string& expression)
 {
-    //reset stack each call
-    _stack = std::stack<int>();
+    std::stack<int> empty;
+    _stack.swap(empty);
 
     std::stringstream ss(expression);
     std::string token;
 
     while (ss >> token)
     {
-        // number check (only single digit allowed in subject)
-        if (token.size() == 1 && std::isdigit(token[0]))
+        if (isNumber(token))
         {
-            int number = token[0] - '0';
-            _stack.push(number);
+            _stack.push(token[0] - '0');
         }
         else if (isOperator(token))
         {
             if (_stack.size() < 2)
                 throw std::runtime_error("Error");
 
-            int b = _stack.top();
-            _stack.pop();
+            int b = _stack.top(); _stack.pop();
+            int a = _stack.top(); _stack.pop();
 
-            int a = _stack.top();
-            _stack.pop();
-
-            int result = calculate(a, b, token);
-            _stack.push(result);
+            _stack.push(calculate(a, b, token));
         }
         else
         {

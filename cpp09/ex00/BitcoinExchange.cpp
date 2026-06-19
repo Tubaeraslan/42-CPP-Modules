@@ -31,14 +31,14 @@ static std::string trim(const std::string& str)
     return str.substr(start, end - start + 1);
 }
 
-void BitcoinExchange::loadDatabase(const std::string& filename)
+bool BitcoinExchange::loadDatabase(const std::string& filename)
 {
     std::ifstream file(filename.c_str());
 
     if (!file.is_open())
     {
         std::cerr << "Error: could not open database file." << std::endl;
-        return;
+        return false;
     }
 
     std::string line;
@@ -46,14 +46,13 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
     if (!std::getline(file, line))
     {
         std::cerr << "Error: empty file." << std::endl;
-        return;
+        return false;
     }
 
     if (line != "date,exchange_rate")
     {
-        std::cerr << "Error: invalid database header."
-                << std::endl;
-        return;
+        std::cerr << "Error: invalid database header." << std::endl;
+        return false;
     }
 
     while (std::getline(file, line))
@@ -63,22 +62,22 @@ void BitcoinExchange::loadDatabase(const std::string& filename)
         std::string date;
         std::string rateStr;
 
-        if (std::getline(ss, date, ',')
-            && std::getline(ss, rateStr))
+        if (std::getline(ss, date, ',') &&
+            std::getline(ss, rateStr))
         {
             double rate = std::atof(rateStr.c_str());
-
             _database[trim(date)] = rate;
         }
     }
 
     if (_database.empty())
     {
-        std::cerr << "Error: database empty."
-                << std::endl;
+        std::cerr << "Error: database empty." << std::endl;
+        return false;
     }
 
     file.close();
+    return true;
 }
 
 bool BitcoinExchange::isValidDate(const std::string& date)
@@ -131,25 +130,12 @@ bool BitcoinExchange::isValidDate(const std::string& date)
 bool BitcoinExchange::isValidValue(const std::string& value)
 {
     std::stringstream ss(value);
-
     double number;
 
     ss >> number;
 
     if (ss.fail() || !ss.eof())
         return false;
-
-    if (number < 0)
-    {
-        std::cerr << "Error: not a positive number." << std::endl;
-        return false;
-    }
-
-    if (number > 1000)
-    {
-        std::cerr << "Error: too large a number." << std::endl;
-        return false;
-    }
 
     return true;
 }
@@ -217,31 +203,45 @@ void BitcoinExchange::processInput(const std::string& filename)
         if (!isValidDate(date))
         {
             std::cerr << "Error: bad input => "
-                      << date << std::endl;
+                      << line << std::endl;
             continue;
         }
 
         if (!isValidValue(valueStr))
+        {
+            std::cerr << "Error: bad input => "
+                    << line << std::endl;
             continue;
+        }
 
         double value = std::atof(valueStr.c_str());
 
+        if (value < 0)
+        {
+            std::cerr << "Error: not a positive number." << std::endl;
+            continue;
+        }
+
+        if (value > 1000)
+        {
+            std::cerr << "Error: too large a number." << std::endl;
+            continue;
+        }
         double rate = getExchangeRate(date);
 
         if (rate < 0)
         {
-            std::cerr << "Error: no rate found."
-                      << std::endl;
+            std::cerr << "Error: no rate found." << std::endl;
             continue;
         }
 
         std::cout << date
-                  << " => "
-                  << value
-                  << " = "
-                  << value * rate
-                  << std::endl;
-    }
+                << " => "
+                << value
+                << " = "
+                << value * rate
+                << std::endl;
+            }
 
     file.close();
 }

@@ -5,10 +5,11 @@
 #include <vector>
 #include <deque>
 #include <string>
-#include <cstdlib>
 #include <climits>
-#include <ctime>
 #include <cctype>
+#include <algorithm>
+#include <chrono>
+#include <stdexcept>
 
 class PmergeMe
 {
@@ -25,12 +26,12 @@ private:
     void binaryInsertVector(std::vector<int>& vec, int value);
     void binaryInsertDeque(std::deque<int>& deq, int value);
 
-    std::vector<size_t> generateJacobsthalOrder(size_t size);
+    std::vector<size_t> jacobsthalIndices(size_t size);
 
 public:
     PmergeMe();
-    PmergeMe(const PmergeMe& other);
-    PmergeMe& operator=(const PmergeMe& other);
+    PmergeMe(const PmergeMe&);
+    PmergeMe& operator=(const PmergeMe&);
     ~PmergeMe();
 
     void process(char **argv);

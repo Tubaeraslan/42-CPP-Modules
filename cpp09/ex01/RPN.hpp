@@ -14,6 +14,7 @@ private:
     std::stack<int> _stack;
 
     bool isOperator(const std::string& token);
+    bool isNumber(const std::string& token);
     int calculate(int a, int b, const std::string& op);
 
 public:
@@ -26,4 +27,3 @@ public:
 };
 
 #endif
-

@@ -19,7 +19,7 @@ public:
     BitcoinExchange& operator=(const BitcoinExchange& other);
     ~BitcoinExchange();
 
-    void loadDatabase(const std::string& filename);
+    bool loadDatabase(const std::string& filename);
     void processInput(const std::string& filename);
 
     bool isValidDate(const std::string& date);
