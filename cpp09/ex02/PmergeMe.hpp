@@ -6,9 +6,10 @@
 #include <deque>
 #include <string>
 #include <climits>
+#include <cstdlib>
 #include <cctype>
 #include <algorithm>
-#include <chrono>
+#include <ctime>
 #include <stdexcept>
 
 class PmergeMe

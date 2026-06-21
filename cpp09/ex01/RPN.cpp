@@ -23,9 +23,23 @@ bool RPN::isOperator(const std::string& token)
 
 bool RPN::isNumber(const std::string& token)
 {
-    if (token.size() != 1)
+    if (token.empty())
         return false;
-    return std::isdigit(token[0]);
+
+    size_t i = 0;
+
+    if (token[i] == '-' || token[i] == '+')
+        i++;
+
+    if (i == token.size())
+        return false;
+
+    for (; i < token.size(); i++)
+    {
+        if (!std::isdigit(token[i]))
+            return false;
+    }
+    return true;
 }
 
 int RPN::calculate(int a, int b, const std::string& op)
@@ -47,8 +61,8 @@ int RPN::calculate(int a, int b, const std::string& op)
 
 int RPN::evaluate(const std::string& expression)
 {
-    std::stack<int> empty;
-    _stack.swap(empty);
+    while (!_stack.empty())
+    	_stack.pop();
 
     std::stringstream ss(expression);
     std::string token;
@@ -57,7 +71,7 @@ int RPN::evaluate(const std::string& expression)
     {
         if (isNumber(token))
         {
-            _stack.push(token[0] - '0');
+            _stack.push(std::atoi(token.c_str()));
         }
         else if (isOperator(token))
         {

@@ -30,17 +30,15 @@ void PmergeMe::process(char **argv)
 
     printAfter();
 
-    std::cout << "Time to process a range of " << _vector.size()
-              << " elements with std::vector : " << t1 << " us\n";
-
-    std::cout << "Time to process a range of " << _deque.size()
-              << " elements with std::deque : " << t2 << " us\n";
+    std::cout << "Time to process vector : " << t1 << " us\n";
+    std::cout << "Time to process deque  : " << t2 << " us\n";
 }
+
+// ================= INPUT VALIDATION =================
 
 bool PmergeMe::isValidNumber(const std::string& s)
 {
-    if (s.empty())
-        return false;
+    if (s.empty()) return false;
 
     for (size_t i = 0; i < s.size(); i++)
         if (!std::isdigit(s[i]))
@@ -60,10 +58,13 @@ void PmergeMe::parseInput(char **argv)
             throw std::runtime_error("Error");
 
         int n = std::atoi(s.c_str());
+
         _vector.push_back(n);
         _deque.push_back(n);
     }
 }
+
+// ================= PRINT =================
 
 void PmergeMe::printBefore() const
 {
@@ -71,10 +72,9 @@ void PmergeMe::printBefore() const
     for (size_t i = 0; i < _vector.size(); i++)
     {
         std::cout << _vector[i];
-        if (i + 1 != _vector.size())
-            std::cout << " ";
+        if (i + 1 != _vector.size()) std::cout << " ";
     }
-    std::cout << "\n";
+    std::cout << std::endl;
 }
 
 void PmergeMe::printAfter() const
@@ -83,31 +83,32 @@ void PmergeMe::printAfter() const
     for (size_t i = 0; i < _vector.size(); i++)
     {
         std::cout << _vector[i];
-        if (i + 1 != _vector.size())
-            std::cout << " ";
+        if (i + 1 != _vector.size()) std::cout << " ";
     }
-    std::cout << "\n";
+    std::cout << std::endl;
 }
+
+// ================= TIMER (C++98) =================
 
 double PmergeMe::sortVector()
 {
-    auto start = std::chrono::high_resolution_clock::now();
-
+    clock_t start = clock();
     fordJohnsonVector(_vector);
+    clock_t end = clock();
 
-    auto end = std::chrono::high_resolution_clock::now();
-    return std::chrono::duration<double, std::micro>(end - start).count();
+    return (double)(end - start) * 1000000.0 / CLOCKS_PER_SEC;
 }
 
 double PmergeMe::sortDeque()
 {
-    auto start = std::chrono::high_resolution_clock::now();
-
+    clock_t start = clock();
     fordJohnsonDeque(_deque);
+    clock_t end = clock();
 
-    auto end = std::chrono::high_resolution_clock::now();
-    return std::chrono::duration<double, std::micro>(end - start).count();
+    return (double)(end - start) * 1000000.0 / CLOCKS_PER_SEC;
 }
+
+// ================= BINARY INSERT =================
 
 void PmergeMe::binaryInsertVector(std::vector<int>& v, int val)
 {
@@ -139,11 +140,12 @@ void PmergeMe::binaryInsertDeque(std::deque<int>& d, int val)
     d.insert(d.begin() + l, val);
 }
 
+// ================= JACOBSTHAL =================
+
 std::vector<size_t> PmergeMe::jacobsthalIndices(size_t n)
 {
     std::vector<size_t> order;
-    if (n == 0)
-        return order;
+    if (n == 0) return order;
 
     std::vector<size_t> jac;
     jac.push_back(0);
@@ -152,8 +154,7 @@ std::vector<size_t> PmergeMe::jacobsthalIndices(size_t n)
     while (true)
     {
         size_t next = jac[jac.size() - 1] + 2 * jac[jac.size() - 2];
-        if (next >= n)
-            break;
+        if (next >= n) break;
         jac.push_back(next);
     }
 
@@ -175,6 +176,8 @@ std::vector<size_t> PmergeMe::jacobsthalIndices(size_t n)
 
     return order;
 }
+
+// ================= FORD-JOHNSON VECTOR =================
 
 void PmergeMe::fordJohnsonVector(std::vector<int>& v)
 {
@@ -208,6 +211,8 @@ void PmergeMe::fordJohnsonVector(std::vector<int>& v)
     for (size_t i = 0; i < order.size(); i++)
         binaryInsertVector(v, small[order[i]]);
 }
+
+// ================= FORD-JOHNSON DEQUE =================
 
 void PmergeMe::fordJohnsonDeque(std::deque<int>& d)
 {
